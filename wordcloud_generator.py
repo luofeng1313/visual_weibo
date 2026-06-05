@@ -27,8 +27,7 @@ def generate_wordcloud(text_series, title, width=800, height=400,
         height=height,
         background_color=background_color,
         colormap=colormap,
-        max_words=100,
-        font_path='C:/Windows/Fonts/simhei.ttf'   # Windows黑体，确保词云内部中文正常
+        max_words=100
     ).generate(text)
 
     fig, ax = plt.subplots(figsize=(width//100, height//100))
