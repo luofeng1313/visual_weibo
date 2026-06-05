@@ -16,9 +16,8 @@ plt.rcParams['font.sans-serif'] = ['SimHei']
 plt.rcParams['axes.unicode_minus'] = False
 
 # ================== 配置 ==================
-# 请根据实际输出文件名修改
-DATA_FILE = "bailu_clean.csv"          # A同学预处理后的数据
-TEXT_COL = "text"                # 清洗后的评论文本列名（若为 text 则改为 "text"）
+DATA_FILE = "bailu_clean.csv"         
+TEXT_COL = "text"                
 DATE_COL = "created_at"       # 时间列
 SENTI_COL = "sentiment_label"          # 情感标签列
 
@@ -77,8 +76,7 @@ def get_topic_keywords(lda_model, num_words=8):
 
 def plot_topic_bubble(lda_model, dictionary, corpus):
     vis = pyLDAvis.gensim_models.prepare(lda_model, corpus, dictionary)
-    pyLDAvis.save_html(vis, 'lda_visualization.html')
-    print("✅ 气泡图已保存为 lda_visualization.html")
+    pyLDAvis.save_html(vis, 'lda_visualization.html')        #保存气泡图
 
 def plot_topic_timeline(df, lda_model, dictionary, save_path='topic_timeline.png'):
     df['date'] = pd.to_datetime(df[DATE_COL]).dt.date
@@ -111,12 +109,10 @@ def plot_topic_timeline(df, lda_model, dictionary, save_path='topic_timeline.png
     plt.ylabel('主题编号')
     plt.title('中立评论主题随时间演化热力图')
     plt.tight_layout()
-    plt.savefig(save_path)
-    print(f"✅ 热力图已保存为 {save_path}")
+    plt.savefig(save_path)       #保存热力图
 
 # ================== 主程序 ==================
 if __name__ == '__main__':
-    print("📂 正在加载数据...")
     df_clean = pd.read_csv(DATA_FILE, encoding='utf-8-sig')
     df_clean[DATE_COL] = pd.to_datetime(df_clean[DATE_COL])
     print(f"总数据量: {len(df_clean)}")
@@ -129,11 +125,10 @@ if __name__ == '__main__':
         print("⚠️ 中立评论数量过少，无法进行 LDA 建模。")
         exit()
 
-    print("🔄 正在准备语料（分词、去停用词）...")
+    #正在准备语料（分词、去停用词……）
     texts, dictionary, corpus = prepare_corpus(df_neutral, max_docs=2000)  # 限制2000条加速
     print(f"有效文档数: {len(texts)}")
 
-    print("🎯 训练 LDA 模型（主题数=4）...")
     lda_model = train_lda(corpus, dictionary, num_topics=4, passes=15)
 
     # 保存模型和词典
@@ -141,7 +136,6 @@ if __name__ == '__main__':
         pickle.dump(lda_model, f)
     with open('dictionary.pkl', 'wb') as f:
         pickle.dump(dictionary, f)
-    print("💾 模型和词典已保存为 lda_model.pkl, dictionary.pkl")
 
     # 输出主题关键词
     topic_keywords = get_topic_keywords(lda_model)
@@ -152,5 +146,3 @@ if __name__ == '__main__':
     # 生成可视化文件
     plot_topic_bubble(lda_model, dictionary, corpus)
     plot_topic_timeline(df_neutral, lda_model, dictionary, save_path='topic_timeline.png')
-
-    print("\n🎉 LDA 建模完成！现在可以运行 `streamlit run app.py` 查看主题分析模块。")
