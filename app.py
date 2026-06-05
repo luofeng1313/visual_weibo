@@ -12,15 +12,8 @@ import warnings
 from datetime import datetime
 
 # 设置中文字体
-import matplotlib.font_manager as fm
-
-# 设置 matplotlib 中文字体（用于图表标题等）
-try:
-    # 尝试使用 Linux 常见中文字体
-    plt.rcParams['font.sans-serif'] = ['Noto Sans CJK SC', 'WenQuanYi Zen Hei', 'SimHei', 'DejaVu Sans']
-    plt.rcParams['axes.unicode_minus'] = False
-except:
-    pass
+plt.rcParams['font.sans-serif'] = ['SimHei']  #  Windows
+plt.rcParams['axes.unicode_minus'] = False   # 解决负号显示问题
 
 # 导入自定义模块
 from visualization_templates import (
@@ -99,47 +92,23 @@ st.plotly_chart(fig_line, use_container_width=True)
 # ----------------------------- 词云（正/负） ----------------------------
 st.subheader("📝 评论词云对比")
 col1, col2 = st.columns(2)
-# 提取正面和负面评论的文本
-positive_text = df[df['sentiment_label'] == '正面']['text']
-negative_text = df[df['sentiment_label'] == '负面']['text']
-
 with col1:
     st.markdown("##### 👍 正面评论词云")
-    fig_pos = generate_wordcloud(positive_text, "正面评论词云")
-    if fig_pos:
-        st.pyplot(fig_pos)
-        # 下载按钮
-        img_bytes = io.BytesIO()
-        fig_pos.savefig(img_bytes, format='png', bbox_inches='tight')
-        img_bytes.seek(0)
-        st.download_button(
-            label="📥 下载正面词云",
-            data=img_bytes,
-            file_name="正面词云图.png",
-            mime="image/png",
-            key='download_pos'
-        )
+    if os.path.exists("positive_wordcloud.png"):
+        st.image("positive_wordcloud.png", use_container_width=True)
+        # 可选：提供下载按钮
+        with open("positive_wordcloud.png", "rb") as f:
+            st.download_button("📥 下载正面词云", f, file_name="positive_wordcloud.png", mime="image/png")
     else:
-        st.info("暂无正面评论数据")
-
+        st.info("正面词云图片未找到")
 with col2:
     st.markdown("##### 👎 负面评论词云")
-    fig_neg = generate_wordcloud(negative_text, "负面评论词云")
-    if fig_neg:
-        st.pyplot(fig_neg)
-        img_bytes = io.BytesIO()
-        fig_neg.savefig(img_bytes, format='png', bbox_inches='tight')
-        img_bytes.seek(0)
-        st.download_button(
-            label="📥 下载负面词云",
-            data=img_bytes,
-            file_name="负面词云图.png",
-            mime="image/png",
-            key='download_neg'
-        )
+    if os.path.exists("negative_wordcloud.png"):
+        st.image("negative_wordcloud.png", use_container_width=True)
+        with open("negative_wordcloud.png", "rb") as f:
+            st.download_button("📥 下载负面词云", f, file_name="negative_wordcloud.png", mime="image/png")
     else:
-        st.info("暂无负面评论数据")
-
+        st.info("负面词云图片未找到")
 # ----------------------------- 中立亚型桑基图 ---------------------------
 st.subheader("🔀 中立态度的流向与细分")
 
