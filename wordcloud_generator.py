@@ -4,7 +4,17 @@ import matplotlib.pyplot as plt
 from wordcloud import WordCloud
 import pandas as pd
 import re
+import matplotlib.font_manager as fm
 
+try:
+    # 尝试使用开源中文字体
+    font_path = fm.findfont(fm.FontProperties(family='sans-serif'))
+except:
+    font_path = None
+
+# 设置中文字体
+plt.rcParams['font.sans-serif'] = ['SimHei']
+plt.rcParams['axes.unicode_minus'] = False
 
 def clean_text_for_wordcloud(text_series):
     """清洗文本：去除HTML标签、特殊字符、数字，保留中文字符和字母数字空格"""

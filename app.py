@@ -55,6 +55,12 @@ try:
 except FileNotFoundError:
     st.stop()
 
+st.write("### 调试信息")
+st.write("情感标签分布（前5）：", df['sentiment_label'].value_counts().head())
+st.write("正面评论数量：", len(df[df['sentiment_label'] == '正面']))
+st.write("中性评论数量：", len(df[df['sentiment_label'] == '中性']))
+st.write("text 列是否为空？", df['text'].isna().sum())
+st.write("neutral_subtype 非空数量：", df['neutral_subtype'].notna().sum())
 # ----------------------------- 关键指标 ---------------------------------
 total_comments = len(df)
 positive_rate = (df['sentiment_label'] == '正面').mean()
