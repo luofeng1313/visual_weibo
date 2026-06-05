@@ -12,8 +12,15 @@ import warnings
 from datetime import datetime
 
 # 设置中文字体
-plt.rcParams['font.sans-serif'] = ['SimHei']
-plt.rcParams['axes.unicode_minus'] = False
+import matplotlib.font_manager as fm
+
+# 设置 matplotlib 中文字体（用于图表标题等）
+try:
+    # 尝试使用 Linux 常见中文字体
+    plt.rcParams['font.sans-serif'] = ['Noto Sans CJK SC', 'WenQuanYi Zen Hei', 'SimHei', 'DejaVu Sans']
+    plt.rcParams['axes.unicode_minus'] = False
+except:
+    pass
 
 # 导入自定义模块
 from visualization_templates import (
@@ -59,12 +66,6 @@ try:
 except FileNotFoundError:
     st.stop()
 
-st.write("### 调试信息")
-st.write("情感标签分布（前5）：", df['sentiment_label'].value_counts().head())
-st.write("正面评论数量：", len(df[df['sentiment_label'] == '正面']))
-st.write("中性评论数量：", len(df[df['sentiment_label'] == '中性']))
-st.write("text 列是否为空？", df['text'].isna().sum())
-st.write("neutral_subtype 非空数量：", df['neutral_subtype'].notna().sum())
 # ----------------------------- 关键指标 ---------------------------------
 total_comments = len(df)
 positive_rate = (df['sentiment_label'] == '正面').mean()
