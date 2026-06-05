@@ -41,10 +41,14 @@ st.markdown("> 基于微博评论的情感分析与公众态度洞察")
 @st.cache_data
 def load_data():
     df = pd.read_csv("bailu_clean.csv", encoding="utf-8-sig")
+    # 处理日期
     df['created_at_datetime'] = pd.to_datetime(df['created_at'])
-    label_map = {'positive': '正面', 'negative': '负面', 'neutral': '中性'}
-    if df['sentiment_label'].dtype == 'object':
-        df['sentiment_label'] = df['sentiment_label'].map(label_map).fillna(df['sentiment_label'])
+    # 处理情感标签（强制转换）
+    df['sentiment_label'] = df['sentiment_label'].astype(str).str.lower().str.strip()
+    df.loc[df['sentiment_label'] == 'positive', 'sentiment_label'] = '正面'
+    df.loc[df['sentiment_label'] == 'negative', 'sentiment_label'] = '负面'
+    df.loc[df['sentiment_label'] == 'neutral', 'sentiment_label'] = '中性'
+    # 处理粉丝列
     df['is_fan'] = df['is_fan'].astype(bool)
     return df
 
