@@ -24,7 +24,7 @@ from visualization_templates import (
     COLORS
 )
 from wordcloud_generator import generate_wordcloud
-from lda_analysis import get_topic_keywords
+#from lda_analysis import get_topic_keywords
 warnings.filterwarnings('ignore')
 
 # ----------------------------- 页面配置 ---------------------------------
