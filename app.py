@@ -150,24 +150,6 @@ if not df_neutral_time.empty:
 else:
     st.info("无中性评论数据")
 
-# ----------------------------- LDA 主题建模 -----------------
-st.subheader("📚 中立评论主题挖掘（LDA）")
-required_files = ['lda_model.pkl', 'dictionary.pkl', 'lda_visualization.html', 'topic_timeline.png']
-with open('lda_model.pkl', 'rb') as f:
-    lda_model = pickle.load(f)
-with open('dictionary.pkl', 'rb') as f:
-    dictionary = pickle.load(f)
-topic_keywords = get_topic_keywords(lda_model)
-if topic_keywords:
-    cols = st.columns(len(topic_keywords))
-    for i, (col, kw) in enumerate(zip(cols, topic_keywords)):
-        col.info(f"**主题{i+1}** : " + "、".join(kw))
-with open('lda_visualization.html', 'r', encoding='utf-8') as f:
-    html_str = f.read()
-st.components.v1.html(html_str, height=600)
-st.image('topic_timeline.png')
-
-
 # ----------------------------- 页脚 ------------------------------------
 st.markdown("---")
 st.caption("数据来源：微博评论 | 分析工具：Streamlit + Plotly + WordCloud + SnowNLP")
