@@ -21,6 +21,8 @@ from visualization_templates import (
     create_fan_vs_public_bar,
     create_sentiment_timeline,
     plot_sankey,
+    create_sentiment_timeline_proportion,   
+    create_neutral_subtype_timeline,        
     COLORS
 )
 from wordcloud_generator import generate_wordcloud
@@ -89,6 +91,11 @@ st.subheader("📈 情感演化趋势")
 fig_line = create_sentiment_timeline(df)
 st.plotly_chart(fig_line, use_container_width=True)
 
+# ----------------------------- 整体情感堆叠面积图（百分比） -----------------
+st.subheader("📊 整体情感占比演化")
+fig_prop = create_sentiment_timeline_proportion(df)
+st.plotly_chart(fig_prop, use_container_width=True)
+
 # ----------------------------- 词云（正/负） ----------------------------
 st.subheader("📝 评论词云对比")
 col1, col2 = st.columns(2)
@@ -123,29 +130,10 @@ if not df_neutral.empty and df_neutral['neutral_subtype'].notna().any():
 else:
     st.info("暂无中立亚型数据")
 
-
 # ----------------------------- 中立亚型时间演化（堆叠面积图） -----------
 st.subheader("📊 中立亚型随时间演化")
-df_neutral_time = df[df['sentiment_label'] == '中性'].copy()
-if not df_neutral_time.empty:
-    df_neutral_time['date'] = df_neutral_time['created_at_datetime'].dt.date
-    subtype_daily = df_neutral_time.groupby(['date', 'neutral_subtype']).size().unstack(fill_value=0)
-    subtype_daily_prop = subtype_daily.div(subtype_daily.sum(axis=1), axis=0)
-    fig_area = px.area(
-        subtype_daily_prop.reset_index(),
-        x='date',
-        y=subtype_daily_prop.columns,
-        title='中立亚型占比演化（堆叠面积图）',
-        labels={'value': '占比', 'date': '日期'},
-        color_discrete_map={
-            '纯中性': '#A0A0A0',
-            '吃瓜型': "#39DB77",
-            '理性型': "#C275EB",
-            '隐蔽正面': "#E0E84C",
-            '隐蔽负面': "#D3573E"
-        }
-    )
-    fig_area.update_layout(yaxis_tickformat='.0%')
+fig_area = create_neutral_subtype_timeline(df)
+if fig_area:
     st.plotly_chart(fig_area, use_container_width=True)
 else:
     st.info("无中性评论数据")

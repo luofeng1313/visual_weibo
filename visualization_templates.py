@@ -6,11 +6,16 @@ import pandas as pd
 
 # 配色方案
 COLORS = {
-    '正面': '#2E86AB',   # 蓝
-    '中性': '#F18F01',   # 橙
-    '负面': '#A23B72',   # 紫红
-    '粉丝': '#1B998B',   # 绿松
-    '路人': '#C9E4C5'    # 浅绿
+    '正面': "#30ACE1",   # 蓝
+    '中性': "#EEAB52",   # 橙
+    '负面': "#F65AAD",   # 紫红
+    '粉丝': "#27D2BE",   # 绿松
+    '路人': "#A2E099",    # 浅绿
+    '纯中性': '#A0A0A0',
+    '吃瓜型': "#39DB77",
+    '理性型': "#C275EB",
+    '隐蔽正面': "#E0E84C",
+    '隐蔽负面': "#D3573E"
 }
 
 def create_sentiment_pie(df, sentiment_col='sentiment_label'):
@@ -99,21 +104,59 @@ def prepare_sankey_data(df, neutral_subtype_col='neutral_subtype'):
     return all_nodes, links
 
 def plot_sankey(df, neutral_subtype_col='neutral_subtype'):
-    """绘制桑基图"""
+    """绘制桑基图（仅中立 -> 亚型，颜色复用全局 COLORS，字体清晰）"""
     nodes, links = prepare_sankey_data(df, neutral_subtype_col)
     if not links:
         return None
+
+    # 从全局 COLORS 中获取颜色，未定义的用灰色
+    color_list = [COLORS.get(node, '#CCCCCC') for node in nodes]
+
     fig = go.Figure(data=[go.Sankey(
         node=dict(
-            pad=15, thickness=20,
+            pad=15,
+            thickness=20,
             line=dict(color="black", width=0.5),
-            label=nodes, color="blue"
+            label=nodes,
+            color=color_list,
+            hovertemplate='%{label}<br>总量: %{value}<extra></extra>',
         ),
         link=dict(
             source=[l['source'] for l in links],
             target=[l['target'] for l in links],
-            value=[l['value'] for l in links]
+            value=[l['value'] for l in links],
+            color='rgba(120,120,120,0.4)'   
         )
     )])
-    fig.update_layout(title="中立态度流向细分", font_size=12)
+    fig.update_layout(
+        title=dict(text="中立态度流向细分", font=dict(size=16)),
+        font=dict(size=12),
+        hoverlabel=dict(bgcolor="white", font_size=12),
+        width=800,
+        height=500
+    )
+    return fig
+
+def create_neutral_subtype_timeline(df, date_col='created_at_datetime', 
+                                     neutral_subtype_col='neutral_subtype'):
+    """中立亚型占比演化的堆叠面积图（百分比）"""
+    # 筛选出中性评论
+    df_neutral = df[df['sentiment_label'] == '中性'].copy()
+    if df_neutral.empty:
+        return None
+    
+    # 按日期和亚型分组，计算每天各亚型的数量
+    df_neutral['date'] = pd.to_datetime(df_neutral[date_col]).dt.date
+    subtype_daily = df_neutral.groupby(['date', neutral_subtype_col]).size().unstack(fill_value=0)
+    # 转换为百分比（每天总和为 100%）
+    subtype_daily_prop = subtype_daily.div(subtype_daily.sum(axis=1), axis=0)
+    fig = px.area(
+        subtype_daily_prop.reset_index(),
+        x='date',
+        y=subtype_daily_prop.columns,
+        title='中立亚型占比演化（堆叠面积图）',
+        labels={'value': '占比', 'date': '日期'},
+        color_discrete_map=COLORS
+    )
+    fig.update_layout(yaxis_tickformat='.0%')
     return fig
