@@ -114,10 +114,10 @@ def plot_sankey(df, neutral_subtype_col='neutral_subtype'):
         node=dict(
             pad=20,
             thickness=25,
-            line=dict(color="rgba(0,0,0,0)", width=0),  
+            line=dict(color="rgba(0,0,0,0)", width=0),   # 去掉边框
             label=nodes,
             color=color_list,
-            label_font=dict(color='black', size=12, family='Arial, sans-serif'),
+            # 注意：新版本 Plotly 不支持 label_font，改用全局 font 设置
             hovertemplate='%{label}<br>总量: %{value}<extra></extra>',
         ),
         link=dict(
