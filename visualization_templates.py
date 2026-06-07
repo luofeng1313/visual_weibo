@@ -114,24 +114,27 @@ def plot_sankey(df, neutral_subtype_col='neutral_subtype'):
         node=dict(
             pad=20,
             thickness=25,
-            line=dict(color="black", width=0.5),
+            line=dict(color="rgba(0,0,0,0)", width=0),  
             label=nodes,
             color=color_list,
+            label_font=dict(color='black', size=12, family='Arial, sans-serif'),
             hovertemplate='%{label}<br>总量: %{value}<extra></extra>',
         ),
         link=dict(
             source=[l['source'] for l in links],
             target=[l['target'] for l in links],
             value=[l['value'] for l in links],
-            color='rgba(120,120,120,0.4)'   
+            color='rgba(120,120,120,0.4)'
         )
     )])
     fig.update_layout(
-        title=dict(text="中立态度流向细分", font=dict(size=16)),
-        font=dict(size=14),
+        title=dict(text="中立态度流向细分", font=dict(size=16, color='black')),
+        font=dict(size=14, color='black', family='Arial, sans-serif'),
         hoverlabel=dict(bgcolor="white", font_size=12),
         width=800,
-        height=500
+        height=500,
+        plot_bgcolor='white',
+        paper_bgcolor='white'
     )
     return fig
 
