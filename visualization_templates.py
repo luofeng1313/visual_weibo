@@ -108,14 +108,12 @@ def plot_sankey(df, neutral_subtype_col='neutral_subtype'):
     nodes, links = prepare_sankey_data(df, neutral_subtype_col)
     if not links:
         return None
-
-    # 从全局 COLORS 中获取颜色，未定义的用灰色
     color_list = [COLORS.get(node, '#CCCCCC') for node in nodes]
 
     fig = go.Figure(data=[go.Sankey(
         node=dict(
-            pad=15,
-            thickness=20,
+            pad=20,
+            thickness=25,
             line=dict(color="black", width=0.5),
             label=nodes,
             color=color_list,
@@ -130,7 +128,7 @@ def plot_sankey(df, neutral_subtype_col='neutral_subtype'):
     )])
     fig.update_layout(
         title=dict(text="中立态度流向细分", font=dict(size=16)),
-        font=dict(size=12),
+        font=dict(size=14),
         hoverlabel=dict(bgcolor="white", font_size=12),
         width=800,
         height=500
